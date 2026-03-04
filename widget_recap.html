@@ -135,11 +135,11 @@
     document.getElementById('content').style.display = 'block';
     const effectMin = toMin(r.Total_annuel_min !== undefined ? r.Total_annuel_min : r.Total_annuel);
     const restMin = toMin(r.Heures_restantes_min !== undefined ? r.Heures_restantes_min : r.Heures_restantes);
-    const contratMin = (r.Heures_contrat || 0) * 60;
+    const contratMin = (r.Contrat || 0) * 60;
     const pct = contratMin > 0 ? Math.min(Math.round((effectMin / contratMin) * 100), 100) : 0;
     document.getElementById('effectuees').textContent = formatH(effectMin);
     document.getElementById('restantes').textContent = formatH(restMin);
-    document.getElementById('contrat').textContent = (r.Heures_contrat || 0) + 'h';
+    document.getElementById('contrat').textContent = (r.Contrat || 0) + 'h';
     document.getElementById('percent').textContent = pct + '%';
     setTimeout(() => {
       document.getElementById('progressFill').style.width = pct + '%';
