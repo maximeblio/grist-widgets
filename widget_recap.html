@@ -85,8 +85,8 @@
   <div id="loading" class="loading">Chargement...</div>
   <div id="content" style="display:none">
     <div class="header">
-      <div class="title">Monitorat étudiant</div>
-      <div class="subtitle">Suivi des heures</div>
+      <div class="title" id="affectation">—</div>
+      <div class="subtitle" id="nomcomplet">—</div>
     </div>
     <div class="progress-section">
       <div class="progress-header">
@@ -133,14 +133,25 @@
     const r = records[0];
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
+
+    // Nom, prénom, affectation
+    document.getElementById('nomcomplet').textContent =
+      (r.Moniteur_Prenom || '') + ' ' + (r.Moniteur_Nom || '');
+    document.getElementById('affectation').textContent =
+      r.Moniteur_Affectation || 'Monitorat étudiant';
+
+    // Heures
     const effectMin = toMin(r.Total_annuel_min !== undefined ? r.Total_annuel_min : r.Total_annuel);
     const restMin = toMin(r.Heures_restantes_min !== undefined ? r.Heures_restantes_min : r.Heures_restantes);
-    const contratMin = (r.Contrat || 0) * 60;
+    const contrat = parseInt(r.Contrat || 0);
+    const contratMin = contrat * 60;
     const pct = contratMin > 0 ? Math.min(Math.round((effectMin / contratMin) * 100), 100) : 0;
+
     document.getElementById('effectuees').textContent = formatH(effectMin);
     document.getElementById('restantes').textContent = formatH(restMin);
-    document.getElementById('contrat').textContent = (r.Contrat || 0) + 'h';
+    document.getElementById('contrat').textContent = contrat + 'h';
     document.getElementById('percent').textContent = pct + '%';
+
     setTimeout(() => {
       document.getElementById('progressFill').style.width = pct + '%';
     }, 100);
