@@ -140,10 +140,9 @@
   }
   grist.ready({ requiredAccess: 'read table' });
   grist.onRecords(function(records) {
+    console.log('Données reçues:', records);
     if (!records || records.length === 0) return;
-    const r = records[0];
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
+    ...
 
     // Nom, prénom, affectation
     document.getElementById('nomcomplet').textContent =
