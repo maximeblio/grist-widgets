@@ -136,9 +136,9 @@
 
     // Nom, prénom, affectation
     document.getElementById('nomcomplet').textContent =
-      (r.Moniteur_Prenom || '') + ' ' + (r.Moniteur_Nom || '');
+      (r.Moniteurs_Prenom || '') + ' ' + (r.Moniteurs_Nom || '');
     document.getElementById('affectation').textContent =
-      r.Moniteur_Affectation || 'Monitorat étudiant';
+      r.Moniteurs_Affectation || 'Monitorat étudiant';
 
     // Heures
     const effectMin = toMin(r.Total_annuel_min !== undefined ? r.Total_annuel_min : r.Total_annuel);
