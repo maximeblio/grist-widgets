@@ -141,6 +141,7 @@
   grist.onRecords(function(records) {
     if (!records || records.length === 0) return;
     var r = records[0];
+    alert('Prenom: ' + r.Prenom + ' | Nom: ' + r.Nom + ' | Service: ' + r.Service);
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
     document.getElementById('nomcomplet').textContent = (r.Prenom || '') + ' ' + (r.Nom || '');
