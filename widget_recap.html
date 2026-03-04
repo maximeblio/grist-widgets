@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Récapitulatif Heures</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --accent: #6c8fff;
+    --accent2: #ff8c6b;
+    --text: #e8eaf0;
+    --muted: #6b7090;
+    --success: #5dd6a0;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(108,143,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header {
+    margin-bottom: 32px;
+  }
+
+  .label-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(108,143,255,0.1);
+    border: 1px solid rgba(108,143,255,0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .name span {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  /* Progress arc */
+  .arc-container {
+    display: flex;
+    justify-content: center;
+    margin: 28px 0;
+    position: relative;
+  }
+
+  .arc-svg {
+    transform: rotate(-90deg);
+  }
+
+  .arc-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 10;
+  }
+
+  .arc-fill {
+    fill: none;
+    stroke: url(#arcGradient);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .arc-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .arc-percent {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .arc-sublabel {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Stats row */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text);
+  }
+
+  .stat-value.green { color: var(--success); }
+  .stat-value.orange { color: var(--accent2); }
+
+  /* Contrat total */
+  .contrat-bar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .contrat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .contrat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+  }
+
+  /* Loading state */
+  .loading {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 40px;
+  }
+
+  .dot {
+    display: inline-block;
+    animation: bounce 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-content { animation: fadeIn 0.5s ease forwards; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="loading" class="loading">
+    Chargement <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+  </div>
+
+  <div id="content" class="card-content" style="display:none">
+    <div class="header">
+      <div class="label-tag">Monitorat étudiant</div>
+      <div class="name" id="nom">—</div>
+    </div>
+
+    <div class="arc-container">
+      <svg class="arc-svg" width="160" height="160" viewBox="0 0 160 160">
+        <defs>
+          <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#6c8fff"/>
+            <stop offset="100%" style="stop-color:#5dd6a0"/>
+          </linearGradient>
+        </defs>
+        <circle class="arc-bg" cx="80" cy="80" r="65"/>
+        <circle class="arc-fill" id="arcFill" cx="80" cy="80" r="65"
+          stroke-dasharray="0 408"
+          stroke-dashoffset="0"/>
+      </svg>
+      <div class="arc-center">
+        <div class="arc-percent" id="percent">0%</div>
+        <div class="arc-sublabel">complété</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">✅ Effectuées</div>
+        <div class="stat-value green" id="effectuees">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">⏳ Restantes</div>
+        <div class="stat-value orange" id="restantes">—</div>
+      </div>
+    </div>
+
+    <div class="contrat-bar">
+      <div class="contrat-label">📋 Contrat annuel</div>
+      <div class="contrat-value" id="contrat">—</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<script>
+  function toMin(t) {
+    if (!t) return 0;
+    if (typeof t === 'number') return Math.round(t * 60);
+    const parts = String(t).split(':');
+    if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    return 0;
+  }
+
+  function formatH(min) {
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return `${h}h${m.toString().padStart(2, '0')}`;
+  }
+
+  grist.ready({ requiredAccess: 'read table' });
+
+  grist.onRecords(function(records) {
+    if (!records || records.length === 0) return;
+    const r = records[0];
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+
+    // Nom du moniteur
+    const nom = r.Moniteur_Nom || r.Moniteurs || '—';
+    document.getElementById('nom').innerHTML = `Mon <span>espace</span>`;
+
+    // Valeurs
+    const effectMin = toMin(r.Total_annuel_min || r.Total_annuel);
+    const restMin = toMin(r.Heures_restantes_min || r.Heures_restantes);
+    const contratH = r.Heures_contrat || ((effectMin + restMin) / 60);
+    const contratMin = contratH * 60;
+    const pct = contratMin > 0 ? Math.round((effectMin / contratMin) * 100) : 0;
+
+    document.getElementById('effectuees').textContent = formatH(effectMin);
+    document.getElementById('restantes').textContent = formatH(restMin);
+    document.getElementById('contrat').textContent = `${contratH}h`;
+    document.getElementById('percent').textContent = `${pct}%`;
+
+    // Arc animation
+    const circumference = 2 * Math.PI * 65;
+    const filled = (pct / 100) * circumference;
+    document.getElementById('arcFill').setAttribute(
+      'stroke-dasharray', `${filled} ${circumference}`
+    );
+  });
+</script>
+</body>
+</html>
