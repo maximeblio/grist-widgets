@@ -61,7 +61,6 @@
   .affectation {
     font-size: 12px;
     color: var(--muted);
-    font-weight: 400;
   }
   .progress-section { margin-bottom: 24px; }
   .progress-header {
@@ -129,40 +128,33 @@
   function toMin(t) {
     if (!t || t === '0:00') return 0;
     if (typeof t === 'number') return Math.round(t);
-    const parts = String(t).split(':');
+    var parts = String(t).split(':');
     if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
     return 0;
   }
   function formatH(min) {
-    const h = Math.floor(Math.abs(min) / 60);
-    const m = Math.abs(min) % 60;
-    return h + 'h' + m.toString().padStart(2, '0');
+    var h = Math.floor(Math.abs(min) / 60);
+    var m = Math.abs(min) % 60;
+    return h + 'h' + (m < 10 ? '0' + m : m);
   }
   grist.ready({ requiredAccess: 'read table' });
   grist.onRecords(function(records) {
-    console.log('Données reçues:', records);
     if (!records || records.length === 0) return;
-    ...
-
-    // Nom, prénom, affectation
-    document.getElementById('nomcomplet').textContent =
-      (r.Prenom || '') + ' ' + (r.Nom || '');
-    document.getElementById('affectation').textContent =
-      r.Service || r.Affectation || 'Monitorat étudiant';
-
-    // Heures
-    const effectMin = toMin(r.Total_annuel_min !== undefined ? r.Total_annuel_min : r.Total_annuel);
-    const restMin = toMin(r.Heures_restantes_min !== undefined ? r.Heures_restantes_min : r.Heures_restantes);
-    const contrat = parseInt(r.Contrat || 0);
-    const contratMin = contrat * 60;
-    const pct = contratMin > 0 ? Math.min(Math.round((effectMin / contratMin) * 100), 100) : 0;
-
+    var r = records[0];
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    document.getElementById('nomcomplet').textContent = (r.Prenom || '') + ' ' + (r.Nom || '');
+    document.getElementById('affectation').textContent = r.Service || 'Monitorat étudiant';
+    var effectMin = toMin(r.Total_annuel_min !== undefined ? r.Total_annuel_min : r.Total_annuel);
+    var restMin = toMin(r.Heures_restantes_min !== undefined ? r.Heures_restantes_min : r.Heures_restantes);
+    var contrat = parseInt(r.Contrat || 0);
+    var contratMin = contrat * 60;
+    var pct = contratMin > 0 ? Math.min(Math.round((effectMin / contratMin) * 100), 100) : 0;
     document.getElementById('effectuees').textContent = formatH(effectMin);
     document.getElementById('restantes').textContent = formatH(restMin);
     document.getElementById('contrat').textContent = contrat + 'h';
     document.getElementById('percent').textContent = pct + '%';
-
-    setTimeout(() => {
+    setTimeout(function() {
       document.getElementById('progressFill').style.width = pct + '%';
     }, 100);
   });
