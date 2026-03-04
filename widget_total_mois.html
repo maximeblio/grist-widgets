@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Total du mois</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #f8f9fa;
+    --white: #ffffff;
+    --border: #e9ecef;
+    --text: #212529;
+    --muted: #868e96;
+    --accent: #2f80ed;
+  }
+  body {
+    background: var(--bg);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 36px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    min-width: 220px;
+  }
+  .label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .value {
+    font-size: 42px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .sublabel {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .loading { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div id="loading" class="loading">Chargement...</div>
+  <div id="content" style="display:none">
+    <div class="label">Total du mois</div>
+    <div class="value" id="total">—</div>
+    <div class="sublabel">heures effectuées</div>
+  </div>
+</div>
+<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<script>
+  grist.ready({
+    requiredAccess: 'read table',
+    columns: [
+      { name: 'Total_mois', title: 'Total_mois' }
+    ]
+  });
+  grist.onRecord(function(record) {
+    if (!record) return;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    var val = record.Total_mois || '0:00';
+    document.getElementById('total').textContent = String(val).replace(':', 'h');
+  });
+</script>
+</body>
+</html>
