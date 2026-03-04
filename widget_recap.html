@@ -137,11 +137,20 @@
     var m = Math.abs(min) % 60;
     return h + 'h' + (m < 10 ? '0' + m : m);
   }
-  grist.ready({ requiredAccess: 'read table' });
+  grist.ready({
+    requiredAccess: 'read table',
+    columns: [
+      { name: 'Nom', title: 'Nom' },
+      { name: 'Prenom', title: 'Prenom' },
+      { name: 'Service', title: 'Service' },
+      { name: 'Total_annuel_min', title: 'Total_annuel_min' },
+      { name: 'Heures_restantes_min', title: 'Heures_restantes_min' },
+      { name: 'Contrat', title: 'Contrat' }
+    ]
+  });
   grist.onRecords(function(records) {
     if (!records || records.length === 0) return;
     var r = records[0];
-    alert('Prenom: ' + r.Prenom + ' | Nom: ' + r.Nom + ' | Service: ' + r.Service);
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
     document.getElementById('nomcomplet').textContent = (r.Prenom || '') + ' ' + (r.Nom || '');
